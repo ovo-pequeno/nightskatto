@@ -182,7 +182,7 @@ def make_res_clip(duration, thread_title, res_no, is_op, body):
     # スレタイ帯（上部固定・縦型は高め）
     title_bar = ColorClip(size=(W, 230), color=TITLE_BG, duration=duration).set_position((0, 0))
     layers.append(title_bar)
-    title_txt = TextClip(wrap(thread_title, 16), font=FONT, fontsize=TITLE_FONTSIZE,
+    title_txt = TextClip(thread_title, font=FONT, fontsize=TITLE_FONTSIZE,
                          color=TITLE_COLOR, method="caption", align="center",
                          size=(W - 80, 230)).set_duration(duration).set_position((40, 0))
     layers.append(title_txt)
@@ -198,7 +198,7 @@ def make_res_clip(duration, thread_title, res_no, is_op, body):
     layers.append(id_clip)
 
     # 本文（画面中央に大きく）
-    body_clip = TextClip(wrap(body, 16), font=FONT, fontsize=RES_FONTSIZE,
+    body_clip = TextClip(body, font=FONT, fontsize=RES_FONTSIZE,
                          color=BODY_COLOR, method="caption", align="West",
                          size=(W - 140, None), interline=16
                          ).set_duration(duration).set_position((70, 480))

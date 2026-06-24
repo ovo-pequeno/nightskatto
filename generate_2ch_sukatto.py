@@ -183,7 +183,7 @@ def make_res_clip(duration, thread_title, res_no, is_op, body):
     # スレタイ帯（上部固定）
     title_bar = ColorClip(size=(W, 110), color=TITLE_BG, duration=duration).set_position((0, 0))
     layers.append(title_bar)
-    title_txt = TextClip(wrap(thread_title, 38), font=FONT, fontsize=TITLE_FONTSIZE,
+    title_txt = TextClip(thread_title, font=FONT, fontsize=TITLE_FONTSIZE,
                          color=TITLE_COLOR, method="caption", align="West",
                          size=(W - 80, 110)).set_duration(duration).set_position((40, 0))
     layers.append(title_txt)
@@ -196,7 +196,7 @@ def make_res_clip(duration, thread_title, res_no, is_op, body):
     layers.append(name_clip)
 
     # 本文（左寄せ・大きめ）
-    body_clip = TextClip(wrap(body, 34), font=FONT, fontsize=RES_FONTSIZE,
+    body_clip = TextClip(body, font=FONT, fontsize=RES_FONTSIZE,
                          color=BODY_COLOR, method="caption", align="West",
                          size=(W - 160, None), interline=14
                          ).set_duration(duration).set_position((80, 250))
@@ -213,7 +213,7 @@ def _fake_id():
 # ----- スレ間のタイトルカード -----
 def make_card_clip(duration, text):
     layers = [ColorClip(size=(W, H), color=(20, 20, 24), duration=duration)]
-    t = TextClip(wrap(text, 22), font=FONT, fontsize=72, color="white",
+    t = TextClip(text, font=FONT, fontsize=72, color="white",
                  method="caption", align="center", size=(W - 300, None)
                  ).set_duration(duration).set_position(("center", "center"))
     layers.append(t)
