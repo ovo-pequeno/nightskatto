@@ -35,7 +35,7 @@ MODEL   = os.environ.get("MODEL", "gemini-2.5-flash")
 
 VOICEVOX_URL = "http://127.0.0.1:50021"
 SPEAKER_OP   = 2     # イッチ（スレ主）= 四国めたん
-SPEAKER_NPC  = 11    # 名無し（合いの手）= 雀松朱司
+SPEAKER_NPC  = 7    # 名無し（合いの手）= 雀松朱司
 # 話者を名前で指定（IDがバージョンで変わっても名前から引き直す）
 SPEAKER_OP_NAME  = "四国めたん"
 SPEAKER_NPC_NAME = "雀松朱司"
