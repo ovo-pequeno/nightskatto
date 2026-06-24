@@ -1,7 +1,7 @@
 name: daily-2ch-sukatto
 
 on:
-  schedule:
+  # schedule:
     # UTC 11:29 = JST 20:29ごろ。1日1本。:00を避けて混雑回避。
     # - cron: "29 11 * * *"
   workflow_dispatch: {}
