@@ -156,10 +156,15 @@ def generate_thread(avoid_summaries):
 # ----- 読み上げ用にテキストを整える（表示はそのまま・音声だけ整形） -----
 def _for_speech(text):
     t = text
-    t = re.sub(r'[wWｗＷ]{2,}', '', t)                       # 「www」笑いは読まない
-    t = re.sub(r'(?<=[ぁ-んァ-ヴ一-龯。、！？])[wWｗＷ]+', '', t)  # 文末の単独wも除去
-    t = re.sub(r'[>＞]{2}\s*([0-9０-９]+)', r'レス\1', t)      # >>5 → レス5
-    t = t.replace('ｗ', '').replace('Ｗ', '')
+    t = re.sub(r'[>＞]{2}\s*([0-9０-９]+)', r'レス\1', t)   # >>5 → レス5（先に処理）
+    # 「www」笑いは読点「、」にして軽く間を入れる
+    t = re.sub(r'[wWｗＷ]{2,}', '、', t)
+    t = re.sub(r'(?<=[ぁ-んァ-ヴ一-龯。、！？])[wWｗＷ]+', '、', t)
+    t = t.replace('ｗ', '、').replace('Ｗ', '、')
+    # 句読点の重複を整理
+    t = re.sub(r'、{2,}', '、', t)
+    t = re.sub(r'([。！？])、', r'\1', t)
+    t = re.sub(r'、([。！？])', r'\1', t)
     return t
 
 
