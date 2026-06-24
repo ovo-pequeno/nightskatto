@@ -38,7 +38,7 @@ SPEAKER_OP   = 2     # イッチ（スレ主）= 四国めたん
 SPEAKER_NPC  = 7    # 名無し（合いの手）= 雀松朱司
 # 話者を名前で指定（IDがバージョンで変わっても名前から引き直す）
 SPEAKER_OP_NAME  = "四国めたん"
-SPEAKER_NPC_NAME = "雀松朱司"
+SPEAKER_NPC_NAME = "ずんだもん"
 VOICE_SPEED  = 1.35
 
 OUT_DIR  = "out_2ch_s_vv"
