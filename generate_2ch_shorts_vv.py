@@ -35,7 +35,10 @@ MODEL   = os.environ.get("MODEL", "gemini-2.5-flash")
 
 VOICEVOX_URL = "http://127.0.0.1:50021"
 SPEAKER_OP   = 2     # イッチ（スレ主）= 四国めたん
-SPEAKER_NPC  = 3     # 名無し（合いの手）= ずんだもん
+SPEAKER_NPC  = 43    # 名無し（合いの手）= 雀松朱司
+# 話者を名前で指定（IDがバージョンで変わっても名前から引き直す）
+SPEAKER_OP_NAME  = "四国めたん"
+SPEAKER_NPC_NAME = "雀松朱司"
 VOICE_SPEED  = 1.35
 
 OUT_DIR  = "out_2ch_s_vv"
@@ -295,7 +298,7 @@ def get_youtube():
 def upload(youtube, path, title):
     description = (
         "2ch風スカッとスレ（オリジナル創作）。\n\n"
-        "VOICEVOX:四国めたん／ずんだもん\n\n#スカッと #2ch #スカッとする話 #shorts #Shorts"
+        "VOICEVOX:四国めたん／雀松朱司\n\n#スカッと #2ch #スカッとする話 #shorts #Shorts"
     )
     body = {
         "snippet": {
@@ -337,8 +340,41 @@ def wait_voicevox(timeout=180):
     raise RuntimeError("VOICEVOXエンジンが起動しませんでした")
 
 
+def resolve_speakers():
+    """エンジンの /speakers から話者名でstyle idを引き直す。
+    見つかればグローバルの SPEAKER_OP / SPEAKER_NPC を上書き。
+    （IDがバージョンで変わっても名前で正しく解決するための保険）"""
+    global SPEAKER_OP, SPEAKER_NPC
+    try:
+        sp = requests.get(f"{VOICEVOX_URL}/speakers", timeout=30).json()
+    except Exception as e:
+        print(f"  /speakers取得失敗（既定IDのまま進む）: {e}")
+        return
+
+    def first_style_id(speaker_name):
+        for s in sp:
+            if speaker_name in s.get("name", ""):
+                styles = s.get("styles", [])
+                if styles:
+                    return styles[0]["id"]
+        return None
+
+    op = first_style_id(SPEAKER_OP_NAME)
+    npc = first_style_id(SPEAKER_NPC_NAME)
+    if op is not None:
+        SPEAKER_OP = op
+    else:
+        print(f"  ⚠️ 話者『{SPEAKER_OP_NAME}』が見つからず。既定ID {SPEAKER_OP} を使用")
+    if npc is not None:
+        SPEAKER_NPC = npc
+    else:
+        print(f"  ⚠️ 話者『{SPEAKER_NPC_NAME}』が見つからず。既定ID {SPEAKER_NPC} を使用")
+    print(f"🎙 イッチ={SPEAKER_OP_NAME}(id {SPEAKER_OP}) / 名無し={SPEAKER_NPC_NAME}(id {SPEAKER_NPC})")
+
+
 def main():
     wait_voicevox()
+    resolve_speakers()
     log = load_log()
     avoid = [e["summary"] for e in log][-AVOID_RECENT:]
     print("📝 スレを創作中（Shorts向け）...")
