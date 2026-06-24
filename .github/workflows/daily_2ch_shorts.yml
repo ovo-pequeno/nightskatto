@@ -1,0 +1,53 @@
+name: daily-2ch-shorts
+
+on:
+  schedule:
+    # 1日2本（:00を避けた分に設定）。JST 13:13 / 22:43 ごろ。
+    - cron: "13 4 * * *"    # JST 13:13ごろ
+    - cron: "43 13 * * *"   # JST 22:43ごろ
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-2ch-shorts
+  cancel-in-progress: false
+
+jobs:
+  generate-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps (ffmpeg / ImageMagick / fonts)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg imagemagick fonts-noto-cjk
+          sudo sed -i 's/<policy domain="path" rights="none" pattern="@\*"\/>//' /etc/ImageMagick-6/policy.xml || true
+          sudo sed -i 's/<policy domain="path" rights="none" pattern="@\*"\/>//' /etc/ImageMagick-7/policy.xml || true
+
+      - name: Install python deps
+        run: pip install -r requirements.txt
+
+      - name: Generate and upload (2ch shorts)
+        env:
+          GEMINI_API_KEY:   ${{ secrets.GEMINI_API_KEY }}
+          YT_CLIENT_ID:     ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          PRIVACY: "public"
+        run: python generate_2ch_shorts.py
+
+      - name: Commit dedup log
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add used_log_2ch_shorts.json
+          git commit -m "update 2ch shorts dedup log [skip ci]" || echo "no changes"
+          git pull --rebase origin main
+          git push
