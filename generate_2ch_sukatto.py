@@ -145,8 +145,19 @@ def generate_thread(avoid_summaries):
     return data
 
 
+# ----- 読み上げ用にテキストを整える（表示はそのまま・音声だけ整形） -----
+def _for_speech(text):
+    t = text
+    t = re.sub(r'[wWｗＷ]{2,}', '', t)                       # 「www」笑いは読まない
+    t = re.sub(r'(?<=[ぁ-んァ-ヴ一-龯。、！？])[wWｗＷ]+', '', t)  # 文末の単独wも除去
+    t = re.sub(r'[>＞]{2}\s*([0-9０-９]+)', r'レス\1', t)      # >>5 → レス5
+    t = t.replace('ｗ', '').replace('Ｗ', '')
+    return t
+
+
 # ----- gTTS音声 -----
 def make_audio(text, filename):
+    text = _for_speech(text)
     if not re.search(r'[ぁ-んァ-ヴ一-龯a-zA-Z0-9０-９]', text):
         AudioSegment.silent(duration=400).export(filename, format="mp3")
         return filename
