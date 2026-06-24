@@ -35,10 +35,12 @@ MODEL   = os.environ.get("MODEL", "gemini-2.5-flash")
 
 VOICEVOX_URL = "http://127.0.0.1:50021"
 SPEAKER_OP   = 2     # イッチ（スレ主）= 四国めたん
-SPEAKER_NPC  = 7    # 名無し（合いの手）= 雀松朱司
-# 話者を名前で指定（IDがバージョンで変わっても名前から引き直す）
-SPEAKER_OP_NAME  = "四国めたん"
-SPEAKER_NPC_NAME = "ずんだもん"
+SPEAKER_NPC  = 7     # 名無し（合いの手）= ずんだもん（ツンツン）
+# 話者を「話者名＋スタイル名」で指定（IDがバージョンで変わっても引き直す）
+SPEAKER_OP_NAME   = "四国めたん"
+SPEAKER_OP_STYLE  = "ノーマル"
+SPEAKER_NPC_NAME  = "ずんだもん"
+SPEAKER_NPC_STYLE = "ツンツン"
 VOICE_SPEED  = 1.35
 
 OUT_DIR  = "out_2ch_s_vv"
@@ -298,7 +300,7 @@ def get_youtube():
 def upload(youtube, path, title):
     description = (
         "2ch風スカッとスレ（オリジナル創作）。\n\n"
-        "VOICEVOX:四国めたん／雀松朱司\n\n#スカッと #2ch #スカッとする話 #shorts #Shorts"
+        "VOICEVOX:四国めたん／ずんだもん\n\n#スカッと #2ch #スカッとする話 #shorts #Shorts"
     )
     body = {
         "snippet": {
@@ -341,8 +343,7 @@ def wait_voicevox(timeout=180):
 
 
 def resolve_speakers():
-    """エンジンの /speakers から話者名でstyle idを引き直す。
-    見つかればグローバルの SPEAKER_OP / SPEAKER_NPC を上書き。
+    """エンジンの /speakers から「話者名＋スタイル名」でstyle idを引き直す。
     （IDがバージョンで変わっても名前で正しく解決するための保険）"""
     global SPEAKER_OP, SPEAKER_NPC
     try:
@@ -351,16 +352,21 @@ def resolve_speakers():
         print(f"  /speakers取得失敗（既定IDのまま進む）: {e}")
         return
 
-    def first_style_id(speaker_name):
+    def style_id(speaker_name, style_name):
         for s in sp:
             if speaker_name in s.get("name", ""):
                 styles = s.get("styles", [])
+                # まずスタイル名が一致するものを探す
+                for st in styles:
+                    if style_name and style_name in st.get("name", ""):
+                        return st["id"]
+                # 見つからなければ先頭（ノーマル相当）
                 if styles:
                     return styles[0]["id"]
         return None
 
-    op = first_style_id(SPEAKER_OP_NAME)
-    npc = first_style_id(SPEAKER_NPC_NAME)
+    op = style_id(SPEAKER_OP_NAME, SPEAKER_OP_STYLE)
+    npc = style_id(SPEAKER_NPC_NAME, SPEAKER_NPC_STYLE)
     if op is not None:
         SPEAKER_OP = op
     else:
@@ -369,7 +375,8 @@ def resolve_speakers():
         SPEAKER_NPC = npc
     else:
         print(f"  ⚠️ 話者『{SPEAKER_NPC_NAME}』が見つからず。既定ID {SPEAKER_NPC} を使用")
-    print(f"🎙 イッチ={SPEAKER_OP_NAME}(id {SPEAKER_OP}) / 名無し={SPEAKER_NPC_NAME}(id {SPEAKER_NPC})")
+    print(f"🎙 イッチ={SPEAKER_OP_NAME}/{SPEAKER_OP_STYLE}(id {SPEAKER_OP}) / "
+          f"名無し={SPEAKER_NPC_NAME}/{SPEAKER_NPC_STYLE}(id {SPEAKER_NPC})")
 
 
 def main():
