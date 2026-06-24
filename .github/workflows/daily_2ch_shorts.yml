@@ -1,7 +1,7 @@
 name: daily-2ch-shorts
 
 on:
-  schedule:
+  # schedule:
     # - cron: "13 22 * * *"   # JST  7:13
     # - cron: "27 0 * * *"    # JST  9:27
     # - cron: "43 2 * * *"    # JST 11:43
