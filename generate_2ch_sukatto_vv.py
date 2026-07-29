@@ -32,7 +32,7 @@ YT_CLIENT_SECRET = os.environ["YT_CLIENT_SECRET"]
 YT_REFRESH_TOKEN = os.environ["YT_REFRESH_TOKEN"]
 
 PRIVACY = os.environ.get("PRIVACY", "public")
-MODEL   = os.environ.get("MODEL", "gemini-2.5-flash")
+MODEL   = os.environ.get("MODEL", "gemini-3.5-flash")
 
 VOICE_SPEED  = 1.3
 THREADS_PER_VIDEO = 3      # 1本に詰めるスレ数
@@ -92,7 +92,7 @@ def save_log(log):
 
 # ----- Gemini呼び出し -----
 def gemini_json(prompt, max_retries=5):
-    models = [MODEL, "gemini-2.5-flash-lite", "gemini-3.1-flash-lite"]
+    models = [MODEL, "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
     cfg = None
     if genai_types:
         cfg = genai_types.GenerateContentConfig(max_output_tokens=8192, temperature=1.1)
