@@ -2,9 +2,9 @@ name: daily-2ch-shorts-vv
 
 on:
   schedule:
-    - cron: "23 22 * * *"   # JST  7:23
-    - cron: "37 5 * * *"    # JST 14:37
-    - cron: "13 12 * * *"   # JST 21:13
+    - cron: "23 20 * * *"   # JST  7:23
+    - cron: "37 3 * * *"    # JST 14:37
+    - cron: "13 10 * * *"   # JST 21:13
   workflow_dispatch: {}
 
 permissions:
